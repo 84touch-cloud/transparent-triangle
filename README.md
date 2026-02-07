@@ -58,7 +58,8 @@
 
 ## 👤 作者
 
-- GitHub: **84touch-cloud**
+- **84touch-cloud**  
+- **ChatGPT（OpenAI）** — 開発支援・設計協力
 
 ---
 
