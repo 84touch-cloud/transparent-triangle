@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>透明な三角形</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            text-align: center; background: #ffffff; margin: 0; padding-top: 15px;
+            overflow: hidden; user-select: none; -webkit-user-select: none;
+        }
+        canvas {
+            background: #ffffff; border: 1px solid #e0e0e0; border-radius: 4px;
+            display: block; margin: 8px auto; touch-action: none;
+        }
+
+        .controls-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            width: 300px;
+            margin: 0 auto;
+            padding-right: 4px;
+            box-sizing: border-box;
+        }
+
+        .radio-group { display: flex; gap: 15px; margin: 8px 0; }
+        .radio-label { font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+
+        /* ラジオボタンのカスタマイズ */
+        input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px; height: 18px;
+            border: 1px solid #d1d1d6;
+            border-radius: 50%;
+            outline: none;
+            margin: 0;
+            position: relative;
+            background: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* 選択中のグレーの丸 */
+        input[type="radio"]:checked::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            background-color: #8e8e93; /* 落ち着いたグレー */
+            border-radius: 50%;
+            display: block;
+        }
+        input[type="radio"]:checked {
+            border-color: #8e8e93;
+        }
+
+        .action-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 4px;
+            min-height: 44px;
+        }
+
+        .result-info {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .rank { font-size: 18px; font-weight: 700; line-height: 1.2; }
+        .score { font-size: 11px; color: #bbb; }
+
+        .btn {
+            appearance: none; -webkit-appearance: none;
+            width: 100px; height: 32px; padding: 0;
+            font-size: 13px; font-weight: 400;
+            background: #fafafa; color: #555;
+            border: 1px solid #e0e0e0; border-radius: 4px;
+            cursor: pointer; transition: all 0.1s ease; outline: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .btn:active { background: #f0f0f0; border-color: #d1d1d1; }
+        
+        #label { color: #f2f2f2; font-size: 10px; margin-top: 25px; }
+    </style>
+</head>
+<body>
+
+    <canvas id="sampleCanvas" width="300" height="200"></canvas>
+    <canvas id="controlCanvas" width="300" height="200"></canvas>
+
+    <div class="controls-wrapper">
+        <div class="radio-group">
+            <label class="radio-label" style="color:#007AFF"><input type="radio" name="point" value="A" checked> blue</label>
+            <label class="radio-label" style="color:#34C759"><input type="radio" name="point" value="B"> green</label>
+            <label class="radio-label" style="color:#FF3B30"><input type="radio" name="point" value="C"> red</label>
+        </div>
+
+        <div class="action-area">
+            <div id="resultArea" class="result-info"></div>
+            <button class="btn" id="actionBtn" onclick="handleAction()">決定</button>
+        </div>
+    </div>
+    
+    <div id="label">透明な三角形</div>
+
+<script>
+    // --- ロジック部分は変更なし ---
+    const sCanvas = document.getElementById('sampleCanvas');
+    const cCanvas = document.getElementById('controlCanvas');
+    const sCtx = sCanvas.getContext('2d');
+    const cCtx = cCanvas.getContext('2d');
+    const radius = 5;
+
+    const colors = { A: '#007AFF', B: '#34C759', C: '#FF3B30' };
+    const lightColors = { A: 'rgba(0,122,255,0.12)', B: 'rgba(52,199,89,0.12)', C: 'rgba(255,59,48,0.12)' };
+
+    let target = { A: {}, B: {}, C: {} };
+    let user = { A: {x:25, y:12}, B: {x:55, y:12}, C: {x:85, y:12} };
+    let judged = false;
+
+    function initGame() {
+        target.A = { x: Math.random()*260+20, y: Math.random()*160+20 };
+        target.B = { x: Math.random()*260+20, y: Math.random()*160+20 };
+        target.C = { x: Math.random()*260+20, y: Math.random()*160+20 };
+        user = { A: {x:25, y:12}, B: {x:55, y:12}, C: {x:85, y:12} };
+        judged = false;
+        const btn = document.getElementById('actionBtn');
+        btn.innerText = '決定';
+        document.getElementById('resultArea').innerHTML = '';
+        draw();
+    }
+
+    function draw() {
+        sCtx.clearRect(0, 0, 300, 200);
+        drawCircle(sCtx, target.A, colors.A);
+        drawCircle(sCtx, target.B, colors.B);
+        drawCircle(sCtx, target.C, colors.C);
+        cCtx.clearRect(0, 0, 300, 200);
+        if (judged) {
+            drawCircle(cCtx, target.A, lightColors.A);
+            drawCircle(cCtx, target.B, lightColors.B);
+            drawCircle(cCtx, target.C, lightColors.C);
+        }
+        drawCircle(cCtx, user.A, colors.A);
+        drawCircle(cCtx, user.B, colors.B);
+        drawCircle(cCtx, user.C, colors.C);
+    }
+
+    function drawCircle(ctx, pt, colorStr) {
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = colorStr;
+        ctx.fill();
+    }
+
+    cCanvas.addEventListener('pointerdown', (e) => {
+        if (judged) return;
+        const rect = cCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const selected = document.querySelector('input[name="point"]:checked').value;
+        user[selected] = { x, y };
+        draw();
+    });
+
+    function handleAction() {
+        const btn = document.getElementById('actionBtn');
+        const res = document.getElementById('resultArea');
+        if (!judged) {
+            const score = Math.hypot(target.A.x-user.A.x, target.A.y-user.A.y) +
+                          Math.hypot(target.B.x-user.B.x, target.B.y-user.B.y) +
+                          Math.hypot(target.C.x-user.C.x, target.C.y-user.C.y);
+            let rank = "Miss", color = "#FF3B30";
+            if (score < 10) { rank = "Perfect"; color = "#FFD700"; }
+            else if (score < 30) { rank = "Good"; color = "#34C759"; }
+            res.innerHTML = `<div class="rank" style="color:${color}">${rank}</div><div class="score">score : ${score.toFixed(2)}</div>`;
+            judged = true;
+            btn.innerText = (rank === "Miss") ? "もう一度" : "次へ";
+            draw();
+        } else {
+            const currentRank = res.querySelector('.rank').innerText;
+            if (currentRank === "Miss") {
+                judged = false;
+                btn.innerText = "決定";
+                res.innerHTML = '';
+                draw();
+            } else {
+                initGame();
+            }
+        }
+    }
+    initGame();
+</script>
+</body>
+</html>
