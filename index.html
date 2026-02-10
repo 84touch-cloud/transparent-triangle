@@ -181,21 +181,24 @@
             else if (score < 30) { rank = "Good"; color = "#34C759"; }
             res.innerHTML = `<div class="rank" style="color:${color}">${rank}</div><div class="score">score : ${score.toFixed(2)}</div>`;
             judged = true;
-            btn.innerText = (rank === "Miss") ? "もう一度" : "次へ";
+            btn.innerText = (rank === "Perfect") ? "次へ" : "もう一度";
             draw();
         } else {
             const currentRank = res.querySelector('.rank').innerText;
-            if (currentRank === "Miss") {
+            if (currentRank === "Perfect") {
+                initGame();
+            } else {
                 judged = false;
                 btn.innerText = "決定";
                 res.innerHTML = '';
                 draw();
-            } else {
-                initGame();
             }
+        }
+
         }
     }
     initGame();
 </script>
 </body>
 </html>
+
