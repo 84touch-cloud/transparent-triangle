@@ -27,48 +27,6 @@ canvas {
     touch-action: none;
 }
 
-/* ===== ヘルプボタン ===== */
-
-#helpBtn {
-    position: fixed;
-    top: calc(8px + env(safe-area-inset-top));
-    left: calc(8px + env(safe-area-inset-left));
-
-    width: 36px;
-    height: 16px;
-
-    background: #fafafa;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-
-    opacity: 0.6;
-    z-index: 1000;
-    cursor: pointer;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-}
-
-#helpBtn::before,
-#helpBtn::after,
-#helpBtn span {
-    content: "";
-    display: block;
-    width: 16px;
-    height: 1.5px;
-    background: #777;
-    border-radius: 1px;
-}
-
-#helpBtn:active {
-    background: #f0f0f0;
-    border-color: #d1d1d1;
-    opacity: 1;
-}
-
 /* ===== コントロール周り ===== */
 
 .controls-wrapper {
@@ -170,10 +128,6 @@ input[type="radio"]:checked::before {
 </head>
 
 <body>
-
-<button id="helpBtn" onclick="openHelp()">
-    <span></span>
-</button>
 
 <canvas id="sampleCanvas" width="300" height="200"></canvas>
 <canvas id="controlCanvas" width="300" height="200"></canvas>
@@ -295,15 +249,9 @@ function handleAction() {
     }
 }
 
-function openHelp() {
-    window.open(
-        "https://github.com/84touch-cloud/transparent-triangle",
-        "_blank"
-    );
-}
-
 initGame();
 </script>
 
 </body>
 </html>
+
