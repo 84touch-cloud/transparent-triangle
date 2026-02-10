@@ -87,6 +87,7 @@
         .btn:active { background: #f0f0f0; border-color: #d1d1d1; }
         
         #label { color: #f2f2f2; font-size: 10px; margin-top: 25px; }
+        
         #helpBtn {
             position: fixed;
             top: calc(8px + env(safe-area-inset-top));
@@ -103,8 +104,11 @@
             cursor: pointer;
             opacity: 0.6;
             z-index: 1000;
-        }        
+        }
+        #helpBtn {　opacity: 0.4; }
         #helpBtn:hover { opacity: 1; }
+        #helpBtn:active { opacity: 0.8; }
+
     </style>
 </head>
 <body>
@@ -225,6 +229,7 @@
 </script>
 </body>
 </html>
+
 
 
 
